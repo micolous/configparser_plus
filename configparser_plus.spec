@@ -1,6 +1,3 @@
-
-%global eggpath $RPM_BUILD_ROOT%{_prefix}/lib/python2.7/site-packages/
-
 Name:		configparser_plus
 Version:	1.0.0
 Release:	1%{?dist}
@@ -25,17 +22,11 @@ An extension library to Python's SafeConfigParser to provide defaults as a two d
 
 
 %build
-python setup.py build
-
+echo "Nothing to do"
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p %{eggpath}
-export PYTHONPATH=%{eggpath}
-python setup.py install --prefix=$RPM_BUILD_ROOT%{_prefix}
-#Setup.py leaves a bunch of shit left over. ... we need to clean it up.
-#rm %{eggpath}/easy-install.pth
-#rm %{eggpath}/site.py*
+%{__python} setup.py install --root $RPM_BUILD_ROOT
 
 
 %clean
