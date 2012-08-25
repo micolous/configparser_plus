@@ -19,11 +19,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 try:
 	# py3
-	from configparser import SafeConfigParser, NoOptionError
+	from configparser import SafeConfigParser, NoOptionError, NoSectionError
 except ImportError:
 	# py2
-	from ConfigParser import SafeConfigParser, NoOptionError
+	from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError
 
+__all__ = [
+	'ConfigParserPlus',
+	'NoOptionError',
+	'NoSectionError',
+]
+	
 class ConfigParserPlus(SafeConfigParser):
 	"""
 ConfigParserPlus changes the behaviour of the SafeConfigParser constructor so it takes in a two-dimensional dict of defaults (which is much simpler to handle).  You could also pass it something that implements a 2D dict.
@@ -46,14 +52,17 @@ Default values will be cast for getint and getfloat, unless the default value is
 	def _get_with_default(self, section, option, method, coercion=None):
 		try:
 			return getattr(SafeConfigParser, method)(self, section, option)
-		except NoOptionError:
+		except (NoOptionError, NoSectionError):
 			try:
 				v = self._cfp_defaults[section][option]
 			except KeyError, ex:
 				if self._allow_no_value:
 					return None
 				else:
-					raise ex
+					if section in self._cfp_defaults:
+						raise NoOptionError(option, section)
+					else:
+						raise NoSectionError(section)
 			else:
 				if coercion != None and v != None:
 					v = coercion(v)
