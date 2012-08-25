@@ -55,7 +55,7 @@ Default values will be cast for getint and getfloat, unless the default value is
 		except (NoOptionError, NoSectionError):
 			try:
 				v = self._cfp_defaults[section][option]
-			except KeyError, ex:
+			except KeyError:
 				if self._allow_no_value:
 					return None
 				else:
