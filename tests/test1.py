@@ -12,7 +12,6 @@ DEFAULTS = {
 }
 
 TEST_PATH = dirname(__file__)
-print TEST_PATH
 
 def test1_0():
 	"Make sure defaults are set correctly."
