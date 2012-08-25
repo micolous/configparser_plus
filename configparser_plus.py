@@ -19,15 +19,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 try:
 	# py3
-	from configparser import SafeConfigParser, NoOptionError, NoSectionError
+	from configparser import SafeConfigParser, NoOptionError, NoSectionError, InterpolationMissingOptionError
 except ImportError:
 	# py2
-	from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError
+	from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError, InterpolationMissingOptionError
 
 __all__ = [
 	'ConfigParserPlus',
 	'NoOptionError',
 	'NoSectionError',
+	'InterpolationMissingOptionError',
 ]
 	
 class ConfigParserPlus(SafeConfigParser):
@@ -49,9 +50,12 @@ Default values will be cast for getint and getfloat, unless the default value is
 		"""Return the 2D dict that is providing defaults.."""
 		return self._cfp_defaults
 
-	def _get_with_default(self, section, option, method, coercion=None):
+	def _get_with_default(self, section, option, method, coercion=None, raw=None, vars={}):
 		try:
-			return getattr(SafeConfigParser, method)(self, section, option)
+			if raw == None:
+				return getattr(SafeConfigParser, method)(self, section, option)
+			else:
+				return getattr(SafeConfigParser, method)(self, section, option, raw=raw, vars=vars)
 		except (NoOptionError, NoSectionError):
 			try:
 				v = self._cfp_defaults[section][option]
@@ -66,10 +70,13 @@ Default values will be cast for getint and getfloat, unless the default value is
 			else:
 				if coercion != None and v != None:
 					v = coercion(v)
+				if not raw:
+					# interpolate the things
+					v = self._interpolate(section, option, v, vars)
 				return v
 
-	def get(self, section, option):
-		return self._get_with_default(section, option, 'get')
+	def get(self, section, option, raw=True, vars={}):
+		return self._get_with_default(section, option, 'get', None, raw, vars)
 
 	def getint(self, section, option):
 		return self._get_with_default(section, option, 'getint', int)
