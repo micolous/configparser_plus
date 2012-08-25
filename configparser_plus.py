@@ -56,7 +56,7 @@ Default values will be cast for getint and getfloat, unless the default value is
 				return getattr(SafeConfigParser, method)(self, section, option)
 			else:
 				return getattr(SafeConfigParser, method)(self, section, option, raw=raw, vars=vars)
-		except (NoOptionError, NoSectionError):
+		except (NoOptionError, NoSectionError) as _:
 			try:
 				v = self._cfp_defaults[section][option]
 			except KeyError:
