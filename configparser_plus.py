@@ -60,7 +60,7 @@ Default values will be cast for getint and getfloat, unless the default value is
 		"Return the 2D dict that is providing defaults.."
 		return self._cfp_defaults
 			
-"""
+_ = """
 # original implementation
 	def _get_with_default(self, section, option, method, coercion=None, raw=None, vars={}):
 		try:
