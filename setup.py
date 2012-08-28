@@ -5,7 +5,7 @@ from setuptools import setup
 try:
 	import configparser
 except ImportError:
-	install_requires = ['configparser']
+	install_requires = ['configparser>=3.2.0r3']
 else:
 	# python 3.2 doesn't need this module, and in fact will break
 	install_requires = []
