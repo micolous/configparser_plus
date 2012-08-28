@@ -17,12 +17,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-try:
-	# py3
-	from configparser import SafeConfigParser, NoOptionError, NoSectionError, InterpolationMissingOptionError
-except ImportError:
-	# py2
-	from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError, InterpolationMissingOptionError
+from configparser import ConfigParser, NoOptionError, NoSectionError, InterpolationMissingOptionError
 
 __all__ = [
 	'ConfigParserPlus',
@@ -31,7 +26,7 @@ __all__ = [
 	'InterpolationMissingOptionError',
 ]
 	
-class ConfigParserPlus(SafeConfigParser):
+class ConfigParserPlus(ConfigParser):
 	"""
 ConfigParserPlus changes the behaviour of the SafeConfigParser constructor so it takes in a two-dimensional dict of defaults (which is much simpler to handle).  You could also pass it something that implements a 2D dict.
 
@@ -41,15 +36,32 @@ Default values will be cast for getint and getfloat, unless the default value is
 	"""
 
 	def __init__(self, defaults, allow_no_value=False):
-		SafeConfigParser.__init__(self)
+		super(ConfigParserPlus, self).__init__()
+		
+		# pass the defaults back through to read_dict
+		self.read_dict(defaults)
+		
 		# apparently self._defaults is used by the default implementation.
 		self._cfp_defaults = defaults
 		self._allow_no_value = allow_no_value
+		
+	def get(self, *args, **kwargs):
+		"Emulate the 'allow_no_value' behaviour"
+		
+		if self._allow_no_value:
+			try:
+				return super(ConfigParserPlus, self).get(*args, **kwargs)
+			except (NoOptionError, NoSectionError) as _:
+				return None
+		else:
+			return super(ConfigParserPlus, self).get(*args, **kwargs)
 
 	def defaults(self):
-		"""Return the 2D dict that is providing defaults.."""
+		"Return the 2D dict that is providing defaults.."
 		return self._cfp_defaults
-
+			
+"""
+# original implementation
 	def _get_with_default(self, section, option, method, coercion=None, raw=None, vars={}):
 		try:
 			if raw == None:
@@ -72,7 +84,12 @@ Default values will be cast for getint and getfloat, unless the default value is
 					v = coercion(v)
 				if not raw:
 					# interpolate the things
-					v = self._interpolate(section, option, v, vars)
+					if hasattr(self, '_interpolation'):
+						# we're on python 3, use the interpolation provider.
+						v = self._interpolation.before_get(self, section, option, value, vars)
+					else:
+						# we're on python 2, use the internal interpolation system.
+						v = self._interpolate(section, option, v, vars)
 				return v
 
 	def get(self, section, option, raw=True, vars={}):
@@ -86,4 +103,4 @@ Default values will be cast for getint and getfloat, unless the default value is
 
 	def getfloat(self, section, option):
 		return self._get_with_default(section, option, 'getfloat', float)
-
+"""

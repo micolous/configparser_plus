@@ -4,9 +4,24 @@ An extension library to Python's `SafeConfigParser` to provide defaults as a two
 
 Copyright 2011-2012 Michael Farrell.  Licensed under the GNU LGPLv3.
 
+Version 0.2-dev
+
+## Note: This library is deprecated. ##
+
+I'm retiring this library.  ConfigParser from Python 3.2 implements the key feature of this library through the `read_dict` method, and there is also a backport of this library available for Python 2.6.
+
+I've ported this library to use that library instead now, and this will be retired.
+
+Unfortunately I got half way through writing up some unit tests and implementing support for Python 3.2 when discovering this.  So there are some new tests to work out a couple of bugs in the previous version of the library.
+
+It will probably introduce some API differences, it is based around the Python 3.2 version of the ConfigParser.
+
+The software that uses this library is mostly my own, so I will be porting my own software away from using this library in the future.  You shouldn't write any new software that uses this library.
+
+
 ## Requirements ##
 
-* Python 2.3 or later, or Python 3.0 or later.
+* Python 2.6 or later, or **maybe** Python 3.0 or later.
 
 ## Usage ##
 
@@ -35,5 +50,7 @@ Otherwise, the library is the same.   For example:
 You can then access keys as normal with the `get*` functions.
 
 If the key is not set in a loaded configuration, but is in the default, then the `get*` function will return the default value, however `has_option` will return `False`.
+
+* Note: As of version 0.2, this will use the configparser3 behaviour, where this is no longer the case -- it will return True even if the value comes from the default configuration.
 
 

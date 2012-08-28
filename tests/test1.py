@@ -19,7 +19,7 @@ def test1_0():
 	config = ConfigParserPlus(DEFAULTS)
 	
 	for k, v in DEFAULTS['test1'].iteritems():
-		assert config.get('test1', k) == v
+		assert config.get('test1', k, raw=True) == v
 	
 	# check it again, but cast things now.
 	assert config.getboolean('test1', 'hello') == False
@@ -46,7 +46,7 @@ def test1_interpolate():
 	config = ConfigParserPlus(DEFAULTS)
 	
 	# check that we default to not interpolating
-	assert config.get('test1', 'interpolate') == DEFAULTS['test1']['interpolate']
+	assert config.get('test1', 'interpolate', raw=True) == DEFAULTS['test1']['interpolate']
 	
 	# check that missing interpolations fail
 	try:
@@ -65,10 +65,10 @@ def test1_1():
 	config = ConfigParserPlus(DEFAULTS)
 	path = join(TEST_PATH, 'test1-1.ini')
 	
-	assert config.read(path), 'Failure reading from %r' % path
-	assert config.getboolean('test1', 'hello') == True
-	assert config.getint('test1', 'some_integer') == 42
-	assert config.get('test1', 'interpolate') == 'hello %(desu)s sir'
+	assert config.read([path,]), 'failure reading %s' % path
+	assert config.getboolean('test1', 'hello') == True, 'hello != True (got %r)' % config.getboolean('test1', 'hello')
+	assert config.getint('test1', 'some_integer') == 42, 'some_integer != 42 (got %r)' % config.getint('test1', 'some_integer')
+	assert config.get('test1', 'interpolate', raw=True) == 'hello %(desu)s sir'
 	
 	# check that interpolate works
 	assert config.get('test1', 'interpolate', raw=False, vars={'desu': 'fine'}) == 'hello fine sir'
