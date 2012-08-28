@@ -21,7 +21,7 @@ The software that uses this library is mostly my own, so I will be porting my ow
 
 ## Requirements ##
 
-* Python 2.6 or later, or **maybe** Python 3.0 or later.
+* Python 2.6 or later, or Python 3.2 or later.
 
 ## Usage ##
 
