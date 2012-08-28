@@ -18,7 +18,7 @@ def test1_0():
 	"Make sure defaults are set correctly."
 	config = ConfigParserPlus(DEFAULTS)
 	
-	for k, v in DEFAULTS['test1'].iteritems():
+	for k, v in DEFAULTS['test1'].items():
 		assert config.get('test1', k, raw=True) == v
 	
 	# check it again, but cast things now.
